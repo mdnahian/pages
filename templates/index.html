@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Pages - Quick & Easy Static Page Generator</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bulma.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fontawesome/css/font-awesome.css') }}">
+
+		<style type="text/css">
+			::selection {
+			  background: #242424;
+			  color:#ffffff;
+			}
+			::-moz-selection {
+			  background: #242424;
+			  color:#ffffff;
+			}
+		</style>
+
+		<script src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+		<script src="{{ url_for('static', filename='codemirror/mode/javascript/javascript.js') }}"></script>
+		<script src="{{ url_for('static', filename='clipboard/dist/clipboard.min.js') }}"></script>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+		<script type="text/javascript">
+			var cm;
+			var type = '1';
+
+			function sendthisshit () {
+				var title = document.getElementById('title').value;
+				var url = '';
+				var content = '';
+
+				if(type == '1'){
+					url = document.getElementById('url').value;
+				}
+
+				cm.save();
+				content = document.getElementById('content').value;
+
+				$.post( "{{ url_for('new') }}", { "title":title, "url":url, "content":content }).done(function(data) {
+					var response = JSON.parse(data);
+					if(response.error == null){
+
+						document.getElementById('title').value = '';
+						document.getElementById('url').value = '';
+						document.getElementById('content').value = '';
+
+						$('#gurl').attr('value', document.URL + 'p/' + response.pid);
+						$('#burl').attr('href', document.URL + 'p/' + response.pid);
+						new Clipboard('.btn');
+						$('#modal').addClass('is-active');
+
+					} else {
+						alert('An Error Occurred');
+					}
+				});
+				
+			}
+
+			function hidenshow(d){
+				if(d.value == '1'){
+					document.getElementById('wrapper').style.maxWidth = "350px";
+					document.getElementById('durl').style.display = 'block';
+				} else if (d.value == '2') {
+					document.getElementById('wrapper').style.maxWidth = "960px";
+					document.getElementById('durl').style.display = 'none';
+				}
+
+				type = d.value;
+			}
+		</script>
+	</head>
+
+	<body>
+
+		<div id="modal" class="modal">
+		  <div class="modal-background"></div>
+		  <div class="modal-card">
+		    <header class="modal-card-head">
+		      <p class="modal-card-title">Your Page Has Been Created</p>
+		      <button onclick="$('#modal').removeClass('is-active')" class="delete"></button>
+		    </header>
+		    <section class="modal-card-body">
+		      <p class="control has-addons">
+			  	<input id="gurl" class="input is-expanded is-large" type="url">
+			  	<a class="btn button is-large is-default" data-clipboard-target="#gurl">
+			  	  <i class="fa fa-clipboard"></i>
+			  	</a>
+			  </p>
+		    </section>
+		    <footer class="modal-card-foot">
+		      <a id="burl" class="button is-success is-medium is-fullwidth" href="#">GO THERE NOW</a>
+		    </footer>
+		  </div>
+		</div>
+
+		<section class="hero is-fullheight is-dark">
+		  <div class="hero-head">
+		    <div class="container">
+		      <div class="tabs is-centered">
+		        
+		      </div>
+		    </div>
+		  </div>
+
+		  <div class="hero-body">
+		    <div class="container has-text-centered">
+
+		    	<center>
+			    	<div id="wrapper" class="box" style="max-width:350px;">
+
+				      <h3 class="title is-2" style="color:#242424">
+				        Pages
+				      </h3>
+				      <h4 class="subtitle is-5" style="color:#242424">Quick & Easy Static Page Generator</h4>
+
+				      <div style="text-align:left;">
+
+				      	  <label class="label">Title</label>
+					      <p class="control">
+				  			<input id="title" class="input" type="text" placeholder="i.e. My Page">
+						  </p>
+
+						  <label class="label">Action</label>
+							<p class="control">
+							  <span class="select is-fullwidth">
+							    <select onchange="hidenshow(this)">
+							      <option value='1' selected>Redirect Url</option>
+							      <option value='2'>None</option>
+							    </select>
+							  </span>
+							</p>
+
+						  <div id="durl" class="control">
+							  <label class="label">Url</label>
+							  <p class="control">
+					  			<input id="url" class="input" type="url" placeholder="i.e. http://example.com">
+							  </p>
+						  </div>
+
+						  <div id="dcontent" class="control">
+							  <label class="label">Content</label>
+							  <p class="control">
+							  	<textarea id="content" class="textarea" value="" placeholder="i.e. Hello, this is my page."></textarea>
+							  </p>
+
+							  <script type="text/javascript">
+							  	cm = CodeMirror.fromTextArea(document.getElementById('content'), {
+							    	lineWrapping: true,
+							    	mode: "htmlmixed"
+								});
+
+								document.getElementsByClassName('CodeMirror')[0].style.border = "1px #dedede solid";
+								document.getElementsByClassName('CodeMirror')[0].style.borderRadius = "5px";
+								document.getElementsByClassName('CodeMirror')[0].style.maxHeight = "150px";
+
+							  </script>
+						  </div>
+
+						  <br>
+
+						  <p class="control">
+						  	<a class="button is-success is-medium is-fullwidth" onClick="sendthisshit()">GENERATE</a>
+						  </p>
+
+					  </div>
+
+					
+					</div>  
+				</center>    
+
+		    </div>
+		  </div>
+
+		  <div class="hero-foot">
+		    <div class="container">
+		      <div class="tabs is-centered">
+		        <ul>
+		          <li><a href="http://mdislam.com">Made by Md Islam</a></li>
+		        </ul>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+
+
+	</body>
+</html>

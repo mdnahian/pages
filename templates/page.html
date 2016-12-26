@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{title}}</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bulma.css') }}">
+		{{scripts|safe}}
+	</head>
+
+	<body>
+
+		<section class="hero" style="background-color:transparent;">
+		  <div class="hero-body">
+		    <div class="container">
+		      <h1 class="title">
+		        {{title}}
+		      </h1>
+		      {{content|safe}}
+		    </div>
+		  </div>
+		</section>
+
+	</body>
+</html>
+
